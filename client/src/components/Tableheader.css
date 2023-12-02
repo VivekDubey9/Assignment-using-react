@@ -1,0 +1,15 @@
+.column-title {
+  font-weight: bold;
+  background-color: #f0f0f0; /* Set a background color that stands out */
+}
+
+.rows {
+  width: 99vw;
+  height: 5vh;
+  display: flex;
+  justify-content: space-around;
+}
+
+.theader {
+  width: 99vw;
+}
