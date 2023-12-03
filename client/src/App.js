@@ -3,16 +3,16 @@ import Posts from "./components/Posts";
 import Pagination from "./components/Pagination";
 import axios from "axios";
 import "./App.css";
-
+import { LuTrash } from "react-icons/lu";
 const App = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
+  const [text, setText] = useState();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
       const res = await axios.get(
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
@@ -23,8 +23,28 @@ const App = () => {
 
     fetchPosts();
   }, []);
+  //input handler
+  function searchUsers(query) {
+    query = query.toLowerCase();
+    return posts.filter(
+      (user) =>
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.role.toLowerCase().includes(query)
+    );
+  }
+  const inputHandler = (event) => {
+    event.preventDefault();
+    const temp = searchUsers(text);
+    setPosts(temp);
+  };
+  const handleInputChange = (event) => {
+    event.preventDefault();
+    setText(event.target.value);
+    console.log(text);
+  };
 
-  // Get current posts
+  // Get current lists
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
@@ -36,20 +56,23 @@ const App = () => {
     <div className="container mt-5">
       <h1 className="text-primary mb-3">Admin Dashboard</h1>
       <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search on any filter you want"
-          aria-label="Recipient's username"
-          aria-describedby="button-addon2"
-        />
-        <div className="input-group-append">
+        <form onSubmit={inputHandler}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search on any filter you want"
+            aria-label="Recipient's username"
+            aria-describedby="button-addon2"
+            onChange={handleInputChange}
+          />
+        </form>
+        {/* <div className="input-group-append">
           <button className="btn btn-danger" type="button" id="button-addon2">
-            Delete
+            <LuTrash />
           </button>
-        </div>
+        </div> */}
       </div>
-      <Posts posts={currentPosts} loading={loading} />
+      <Posts posts={currentPosts} setPosts={setPosts} loading={loading} />
       <Pagination
         postsPerPage={postsPerPage}
         totalPosts={posts.length}
