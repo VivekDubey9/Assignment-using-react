@@ -3,9 +3,10 @@ import "./Posts.css";
 import { CiEdit } from "react-icons/ci";
 import { LuTrash } from "react-icons/lu";
 
-const Posts = ({ posts, setPosts, loading }) => {
+const Posts = ({ allPosts, setAllPosts, loading }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAllRows, setSelectAllRows] = useState(false);
+  const [posts, setPosts] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [editedValues, setEditedValues] = useState({
     name: "",
@@ -15,6 +16,10 @@ const Posts = ({ posts, setPosts, loading }) => {
   });
   const [curPage, setCurPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    setPosts(allPosts);
+  }, [allPosts]);
 
   if (loading) {
     return <h2>Loading...</h2>;
@@ -40,32 +45,30 @@ const Posts = ({ posts, setPosts, loading }) => {
 
     setSelectedRows((prevSelectedRows) => {
       if (selectAllRows) {
-        // Deselect all
+        //toggling select and deselect...
+
         return prevSelectedRows.filter((id) => !allRows.includes(id));
       } else {
-        // Select all from the current page
         return [...prevSelectedRows, ...allRows];
       }
     });
   };
 
   const handleDeleteSelected = () => {
-    // Implement your delete logic for selected rows here
-    console.log("Deleting selected rows:", selectedRows);
+    // console.log("Deleting selected rows:", selectedRows);
 
-    // Filter out the selected rows from the current posts
     const updatedPosts = posts.filter(
       (post) => !selectedRows.includes(post.id)
     );
 
-    // Update the parent component's state with the new posts array
     setPosts(updatedPosts);
 
-    // Clear selectedRows, editMode, and editedValues
     setSelectedRows([]);
     setEditMode(null);
     setEditedValues({ name: "", value: "", id: "" });
   };
+
+  //implementing single delete rows functionality
 
   const handleDelete = (postId) => {
     console.log("jhii");
@@ -74,6 +77,8 @@ const Posts = ({ posts, setPosts, loading }) => {
     setEditMode(null);
     setEditedValues({ name: "", value: "", id: "" });
   };
+
+  //single edit functionality from action columnn
 
   const handleEdit = (postId) => {
     setEditMode(postId);
@@ -85,23 +90,22 @@ const Posts = ({ posts, setPosts, loading }) => {
     });
   };
 
+  ////////////////////////////////
   const handleCancelEdit = () => {
     setEditMode(null);
     setEditedValues({ name: "", value: "", id: "" });
   };
 
+  //saving the edited values inputed by user
   const handleSaveEdit = () => {
     const { name, email, role, id } = editedValues;
 
-    // Update the posts array immutably
     const updatedPosts = posts.map((post) =>
       post.id === id ? { ...post, name, email, role } : post
     );
 
-    // Set the new posts array
     setPosts(updatedPosts);
 
-    // Reset edit mode and edited values
     setEditMode(null);
     setEditedValues({
       name: "",
@@ -142,7 +146,6 @@ const Posts = ({ posts, setPosts, loading }) => {
               />
             </th>
 
-            {/* <th scope="col">#</th> */}
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Role</th>

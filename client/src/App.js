@@ -11,6 +11,8 @@ const App = () => {
   const [postsPerPage] = useState(10);
   const [text, setText] = useState();
 
+  //calling api to fetch data
+
   useEffect(() => {
     const fetchPosts = async () => {
       const res = await axios.get(
@@ -23,7 +25,9 @@ const App = () => {
 
     fetchPosts();
   }, []);
-  //input handler
+
+
+  //search query handler to search on any filter user wants
   function searchUsers(query) {
     query = query.toLowerCase();
     return posts.filter(
@@ -33,6 +37,7 @@ const App = () => {
         user.role.toLowerCase().includes(query)
     );
   }
+
   const inputHandler = (event) => {
     event.preventDefault();
     const temp = searchUsers(text);
@@ -44,12 +49,13 @@ const App = () => {
     console.log(text);
   };
 
+
   // Get current lists
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
-  // Change page
+  // Change page 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -66,16 +72,12 @@ const App = () => {
             onChange={handleInputChange}
           />
         </form>
-        {/* <div className="input-group-append">
-          <button className="btn btn-danger" type="button" id="button-addon2">
-            <LuTrash />
-          </button>
-        </div> */}
       </div>
-      <Posts posts={currentPosts} setPosts={setPosts} loading={loading} />
+      <Posts allPosts={currentPosts} setAllPosts={setPosts} loading={loading} /> 
       <Pagination
         postsPerPage={postsPerPage}
         totalPosts={posts.length}
+        currentPage={currentPage}
         paginate={paginate}
       />
     </div>
